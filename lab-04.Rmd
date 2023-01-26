@@ -62,7 +62,8 @@ dennys %>%
 ```{r dennys_country}
 
 dn <- dennys %>%
-  filter((state %in% states$abbreviation)) 
+  filter((state %in% states$abbreviation)) %>%
+  mutate(country = "United States")
   
 ```
 
@@ -102,9 +103,73 @@ lq <- lq %>%
 
 ### Exercise 9
 
-```{r}
+```{r state_count}
 dn %>%
   count(state) %>%
-  inner_join(states, by = c("state" = "abbreviation"))
+  inner_join(states, by = c("state" = "abbreviation")) %>%
+  arrange(desc(n))
+```
+
+### Exercise 10
+
+DC has the most Denny's per thousand square mile.
+
+RI has the most la Quinta per thousand square mile.
+```{r}
+
+dn %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation")) %>%
+  mutate(nmi2= area/n)%>%
+  arrange(nmi2)
+
+lq %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation")) %>%
+  mutate(nmi2= area/n)%>%
+  arrange(nmi2)
+
+dn <- dn %>%
+  mutate(establishment = "Denny's")
+lq <- lq %>%
+  mutate(establishment = "La Quinta")
+
+dn_lq <- bind_rows(dn, lq)
+
+ggplot(dn_lq, mapping = aes(x = longitude,
+                            y = latitude,
+                            color = establishment)) +
+  geom_point(alpha = 0.3)
+```
+
+### Exercise 11
+
+I think his joke holds here
+
+```{r NC_plot}
+
+dn_lq %>%
+  filter(state == "NC")%>%
+  ggplot(dn_lq, mapping = aes(x = longitude,
+                            y = latitude,
+                            color = establishment)) +
+  geom_point(alpha = 0.5)
+
+```
+
+### Exercise 12
+
+I think his joke holds here. There seems like not much of a deviation between their locations.
+
+```{r TX_plot}
+
+dn_lq %>%
+  filter(state == "TX")%>%
+  ggplot(dn_lq, mapping = aes(x = longitude,
+                            y = latitude,
+                            color = establishment)) +
+  geom_point(alpha = 0.2)
+
+
 ```
 
