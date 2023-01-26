@@ -1,7 +1,7 @@
 ---
 title: "Lab 04 - La Quinta is Spanish for next to Denny's, Pt. 1"
-author: "Insert your name here"
-date: "Insert date here"
+author: "Qilin Zhang"
+date: "2023/1/26"
 output: github_document
 ---
 
@@ -18,34 +18,93 @@ states <- read_csv("data/states.csv")
 
 ### Exercise 1
 
-Remove this text, and add your answer for Exercise 1 here.
-Add code chunks as needed.
-Don't forget to label your code chunk.
-Do not use spaces in code chunk labels.
+The data has 6 columns and 1643 rows. Each row represents the data for an individual dennys store. There are six variables which are address, city, state, zip, longitude, latitude.
+
+```{r dim_dennys}
+dim(dennys)
+str(dennys)
+```
 
 ### Exercise 2
 
-Remove this text, and add your answer for Exercise 2 here.
-Add code chunks as needed.
-Don't forget to label your code chunk.
-Do not use spaces in code chunk labels.
+The data has 6 columns and 909 rows. Each row represents the data for an individual laquinta location. There are six variables which are address, city, state, zip, longitude, latitude.
+
+```{r dim_laquinta}
+dim(laquinta)
+str(laquinta)
+
+```
 
 ### Exercise 3
 
-...
+There are a lot of laquinta location outside the US. There are 76 in Mexico, three in Turkey, two in China and canada, one in New Zealand, United Arab Emiratesm, Chile, and Colombia.
+
+There are also a lot of dennys location outside the us. There are "one in Chile, 60 in Canada, five in Mexico, three in Costa Rica, two in Honduras, two in El Salvador, two in the United Kingdom and eight in New Zealand."
+source: https://en.wikipedia.org/wiki/Denny%27s#:~:text=1%2C593%20of%20Denny's%201%2C698%20restaurants,and%20eight%20in%20New%20Zealand.
 
 ### Exercise 4
 
-...
+We can try to restrict the latitude and longitude data based on the range of US territory and filter out all the latitude and longitude combination that are not in the range. 
+We can also look at the states data. If a location is not in the US, it will likely contain state data from the US. 
 
 ### Exercise 5
 
-...
+There are no location outside the US in this data set.
+
+```{r dennys_outside}
+dennys %>%
+  filter(!(state %in% states$abbreviation)) 
+
+```
 
 ### Exercise 6
 
-...
+```{r dennys_country}
 
- 
-Add exercise headings as needed.
+dn <- dennys %>%
+  filter((state %in% states$abbreviation)) 
+  
+```
+
+### Exercise 7
+
+```{r}
+lq <- laquinta 
+
+laquinta%>%
+  filter(!(state %in% states$abbreviation)) %>%
+  select(state) %>%
+  print()
+
+```
+
+### Exercise 8
+
+```{r Country}
+lq <- laquinta %>%
+  mutate(country = case_when(
+    state %in% state.abb     ~ "United States",
+    state %in% c("ON", "BC") ~ "Canada",
+    state == "ANT"           ~ "Colombia",
+    state == c("AG","QR","CH","NL","VE","PU","SL")    ~ "Mexico",
+    state == "FM"           ~ "Micronesia"
+  )
+)
+
+lq %>%
+  filter(!(country == "United States")) %>%
+  select(country) %>%
+  print()
+
+lq <- lq %>%
+  filter(country == "United States")
+```
+
+### Exercise 9
+
+```{r}
+dn %>%
+  count(state) %>%
+  inner_join(states, by = c("state" = "abbreviation"))
+```
 
